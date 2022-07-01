@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "./api"
+		},
+		{
+			"path": "./app"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cSpell.words": [
+			"serverside"
+		]
+	}
+}
