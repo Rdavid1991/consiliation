@@ -1,5 +1,6 @@
 import { fetch_GET } from "./requests";
 import { apiUrl } from "../config";
+import { humanizeDate } from "./formatDate";
 
 
 export const conciliationTable = ( id : string ) => {
@@ -22,7 +23,10 @@ export const conciliationTable = ( id : string ) => {
             },
             columns: [
                 
-                { data: "date" },
+                { 
+                    data   : "date",
+                    render : ( val )=>humanizeDate( val ),
+                },
                 { data: "debit_bnp" },
                 { data: "debit_mides" },
                 { data: "description" },
@@ -32,6 +36,7 @@ export const conciliationTable = ( id : string ) => {
             processing : true,
             retrieve   : true,
             serverSide : true,
+            
         });
     }else{
         throw `${id} No es un selector id, un id comienza con #`;

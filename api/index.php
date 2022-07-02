@@ -4,6 +4,7 @@ header("Access-Control-Allow-Headers: *");
 
 require_once(dirname(__FILE__) . "/db/management.php");
 require_once(dirname(__FILE__) . "/db/Select.class.php");
+require_once(dirname(__FILE__) . "/db/Insert.class.php");
 require_once(dirname(__FILE__) . "/db/ServerSide.class.php");
 
 class Addressee extends ManagementDB
@@ -30,30 +31,13 @@ class Addressee extends ManagementDB
     public function select_conciliation()
     {
 
-        $aColumns = array();
+        $serverside = new ServerSide($_GET);
 
-        $columns = json_decode($_GET["columns"]);
-        $draw = json_decode($_GET["draw"]);
-        $order = json_decode($_GET["order"]);
-        $start = json_decode($_GET["start"]);
-        $start = json_decode($_GET["length"]);
-        $length = json_decode($_GET["length"]);
-        $search = json_decode($_GET["search"]);
-        
-        foreach ($columns as $key => $value) {
-            array_push($aColumns, $value->data);
-        }
-        
-        
-
-
-        $serverside = new ServerSide();
-
-        $sLimit = $serverside->paging($start, $length);
-        $sOrder = $serverside->ordering($order, $columns, $aColumns);
-        $sWhere  = $serverside->filtering($search, $aColumns);
+        $sLimit   = $serverside->paging();
+        $sOrder   = $serverside->ordering();
+        $sWhere   = $serverside->filtering();
+        $aColumns = $serverside->get_columns_name();
     
-
         $select = new Select();
 
         $select->from_table("conciliations");
@@ -62,18 +46,15 @@ class Addressee extends ManagementDB
         $select->order_by($sOrder);
         $select->limit($sLimit);
         $result = $select->go();
-        $total = $select->count();
+        $total  = $select->count();
 
-        $output = array(
-            "draw" => $draw,
-            "recordsTotal" => $total["data"][0]->total,
-            "recordsFiltered" => sizeof($result["data"], COUNT_NORMAL),
-            "data" => $result["data"]
-        );
+        $serverside->dispatch($result["data"], $total["data"][0]->total);
 
-        echo json_encode($output);
     }
 }
 
 $add = new Addressee();
+
+
+//$add->save_addressee();
 $add->select_conciliation();
