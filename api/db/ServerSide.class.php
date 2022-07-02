@@ -1,91 +1,161 @@
 <?php
 class ServerSide
 {
-    function paging($start, $length)
-    {
-        $limit = "";
-        if (isset($_GET["start"]) && $_GET["length"] != '-1') {
-            $limit = "OFFSET " . intval($_GET["start"]) . " ROWS FETCH NEXT " . intval($_GET["length"]) . " ROWS ONLY";
-        }
 
-        return $limit;
+    protected $_columns;
+    protected $_draw;
+    protected $_order;
+    protected $_start;
+    protected $_length = '-1';
+    protected $_search = "";
+    protected $_aColumns = array();
+
+    function __construct(array $GET)
+    {
+
+        $this->_columns =  (array) (is_string($GET["columns"]) ? json_decode($GET["columns"], true) : $GET["columns"]);
+        $this->_search  =  (array) (is_string($GET["search"])  ? json_decode($GET["search"], true)  : $GET["search"]);
+        $this->_order   =  (array) (is_string($GET["order"])   ? json_decode($GET["order"], true)   : $GET["order"]);
+        $this->_draw    = intval($GET["draw"]);
+        $this->_start   = intval($GET["start"]);
+        $this->_length  = intval($GET["length"]);
+
+        foreach ($this->_columns as $key => $value) {
+            array_push($this->_aColumns, $value["data"]);
+        }
     }
 
-    function ordering($order, $columns, $aColumns)
+    public function get_columns_name()
+    {
+        return $this->_aColumns;
+    }
+    public function get_draw()
+    {
+        return $this->_draw;
+    }
+
+    function paging()
+    {
+        $limit = "OFFSET __start__ ROWS FETCH NEXT __length__ ROWS ONLY";
+
+        return ($this->_length != '-1')
+            ? str_replace(
+                [
+                    "__start__",
+                    "__length__"
+                ],
+                [
+                    intval($this->_start),
+                    intval($this->_length)
+                ],
+                $limit
+            )
+            : "";
+    }
+
+    function ordering()
     {
 
         $sOrder = "";
-        if (isset($order)) {
-            $sOrder = "ORDER BY  ";
-            for ($i = 0; $i < sizeof($order); $i++) {
-                if ($columns[$i]->{"orderable"} == "true") {
-                    $sOrder .=  $aColumns[intval($order[$i]->{"column"})] . " " . ($order[$i]->{"dir"} === 'asc' ? 'asc' : 'desc') . ", ";
-                }
-            }
+        $aOrder = array();
+        $sColumn_order = "__column__ __order__";
 
-            $sOrder = substr_replace($sOrder, "", -2);
-            if ($sOrder == "ORDER BY") {
-                $sOrder = "";
+        $sOrder = "ORDER BY __column_order__";
+        for ($i = 0; $i < sizeof($this->_order); $i++) {
+            if ($this->_columns[$i]["orderable"]) {
+
+                $sColumn_order = str_replace(
+                    [
+                        "__column__",
+                        "__order__"
+                    ],
+                    [
+                        $this->_aColumns[$this->_order[$i]["column"]],
+                        strtoupper($this->_order[$i]["dir"])
+                    ],
+                    $sColumn_order
+                );
+
+                array_push($aOrder, $sColumn_order);
             }
+        }
+        $sOrder = str_replace("__column_order__", join(",", $aOrder), $sOrder);
+
+        $aOrderable = array_column($this->_columns, "orderable");
+        if (!in_array(true, $aOrderable, true)) {
+            $sOrder = "";
         }
 
         return $sOrder;
     }
 
-    function filtering(object $search, array $aColumns)
+    function filtering()
     {
         $sWhere = "";
-        if (isset($search) && $search->value != "") {
-            $sWhere = "WHERE (";
-            for ($i = 0; $i < count($aColumns); $i++) {
-                $sWhere .= "[" . $aColumns[$i] . "]" . " LIKE '%" . $search->value . "%' OR ";
+        if ($this->_search["value"] != "") {
+            $sWhere = "WHERE (__condition__)";
+            $sCondition = "[__columns__] LIKE '%__value__%'";
+            $aCondition = array();
+            for ($i = 0; $i < count($this->_aColumns); $i++) {
+
+                $condition = str_replace(
+                    [
+                        "__columns__",
+                        "__value__"
+                    ],
+                    [
+                        $this->_aColumns[$i],
+                        $this->_search["value"]
+                    ],
+                    $sCondition
+                );
+                array_push($aCondition, $condition);
             }
-            $sWhere = substr_replace($sWhere, "", -3);
-            $sWhere .= ')';
+
+            $sWhere = str_replace("__condition__", join(" OR ", $aCondition), $sWhere);
         }
 
         /* Individual column filtering */
-        // for ($i = 0; $i < count($aColumns); $i++) {
-        //     if (isset($_GET["columns"][$i]["searchable"]) && $_GET["columns"][$i]["searchable"] == "true" && $_GET["columns"][$i]["search"]["value"] != '') {
-        //         if ($sWhere == "") {
-        //             $sWhere = "WHERE ";
-        //         } else {
-        //             $sWhere .= " AND ";
-        //         }
-        //         $sWhere .= "`" . $aColumns[$i] . "` LIKE '%" . $_GET["columns"][$i]["search"]["value"] . "%' ";
-        //     }
-        // }
+        $aColumn_search = array_column(array_column($this->_columns, "search"),"value");
+        $aSearch = preg_grep('/\w{1,}/',$aColumn_search );
+        if (sizeof($aSearch) > 0) {
+
+            $sWhere ="WHERE (__condition__)";
+            $sCondition = "[__columns__] LIKE '%__value__%'";
+            $aCondition = array();
+
+            for ($i = 0; $i < count($this->_aColumns); $i++) {
+                if ($this->_columns[$i]["searchable"] && $this->_columns[$i]["search"]["value"] != '') {
+                    
+                    $condition = str_replace(
+                        [
+                            "__columns__",
+                            "__value__"
+                        ],
+                        [
+                            $this->_aColumns[$i],
+                            $this->_columns[$i]["search"]["value"] 
+                        ],
+                        $sCondition
+                    );
+                    array_push($aCondition, $condition);
+                }
+            }
+            $sWhere = str_replace("__condition__", join(" AND ", $aCondition), $sWhere);
+        }
 
         return $sWhere;
     }
 
-    // function special_filtering_offer(string &$sWhere){
+    public function dispatch(array $data, int $data_total_count)
+    {
+        $output = array(
+            "draw" => intval($this->_draw),
+            "recordsTotal" => $data_total_count,
+            "recordsFiltered" => strlen($this->_search["value"]) > 0 ? sizeof($data, COUNT_NORMAL) : $data_total_count,
+            "data" => $data
+        );
 
-    //     $sWhere    = "WHERE (";
-    //     $county    = isset($_GET["county"])    ?$_GET["county"]     :[];
-    //     $province  = isset($_GET["province"])  ?$_GET["province"]   :[];
-    //     $offerType = isset($_GET["offerType"]) ?$_GET["offerType"]  :"";
-    //     $offerName = isset($_GET["offerName"]) ?$_GET["offerName"]  :"";
-
-
-    //     foreach ($county as $key => $value) {
-    //         $sWhere .= " json LIKE '%\"".explode(':', $value)[0]."\"%' OR";
-    //     }
-
-    //     $sWhere = preg_replace('/OR$/',')AND(',$sWhere);
-
-    //     foreach ($province as $key => $value) {
-    //         $sWhere .= " json LIKE '%\"".explode(':', $value)[0]."\"%' OR";
-    //     }
-
-    //     $sWhere = preg_replace('/OR$/',')AND(',$sWhere);
-
-    //     $sWhere.= strlen($offerType) > 0 ? "offer_type_id ='".$offerType."') AND " : "";
-
-    //     $sWhere.= strlen($offerName) > 0 ? "offer_name ='".$offerName."') AND " : "";
-
-    //     $sWhere = substr_replace($sWhere, "", -4);
-
-    //     $sWhere = strlen($sWhere) > 6? $sWhere : "";
-    // }
+        echo json_encode($output);
+    }
 }
