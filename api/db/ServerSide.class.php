@@ -10,15 +10,15 @@ class ServerSide
     protected $_search = "";
     protected $_aColumns = array();
 
-    function __construct(array $GET)
+    function __construct(array $request)
     {
 
-        $this->_columns =  (array) (is_string($GET["columns"]) ? json_decode($GET["columns"], true) : $GET["columns"]);
-        $this->_search  =  (array) (is_string($GET["search"])  ? json_decode($GET["search"], true)  : $GET["search"]);
-        $this->_order   =  (array) (is_string($GET["order"])   ? json_decode($GET["order"], true)   : $GET["order"]);
-        $this->_draw    = intval($GET["draw"]);
-        $this->_start   = intval($GET["start"]);
-        $this->_length  = intval($GET["length"]);
+        $this->_columns =  (array) (is_string($request["columns"]) ? json_decode($request["columns"], true) : $request["columns"]);
+        $this->_search  =  (array) (is_string($request["search"])  ? json_decode($request["search"], true)  : $request["search"]);
+        $this->_order   =  (array) (is_string($request["order"])   ? json_decode($request["order"], true)   : $request["order"]);
+        $this->_draw    = intval($request["draw"]);
+        $this->_start   = intval($request["start"]);
+        $this->_length  = intval($request["length"]);
 
         foreach ($this->_columns as $key => $value) {
             array_push($this->_aColumns, $value["data"]);
@@ -156,6 +156,6 @@ class ServerSide
             "data" => $data
         );
 
-        echo json_encode($output);
+        return json_encode($output);
     }
 }
