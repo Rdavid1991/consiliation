@@ -15,7 +15,7 @@ type StateAddConciliation = {
 
 export const ModalAddConciliation = () => {
 
-    const { values, handleInputChange, setValues } = useForm<StateAddConciliation>({
+    const { values, handleInputChange } = useForm<StateAddConciliation>({
         date        : new Date().toISOString(),
         debit_bnp   : "",
         debit_mides : "",
@@ -31,7 +31,7 @@ export const ModalAddConciliation = () => {
     };
 
     return (
-        <div className="modal" id="addConciliation">
+        <div className="modal fade" id="addConciliation">
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">
@@ -56,6 +56,7 @@ export const ModalAddConciliation = () => {
                                 onChange={handleInputChange}
                                 type="text"
                                 value={values.reference}
+                                required={true}
                             />
                             <Input
                                 id="description"
@@ -63,7 +64,7 @@ export const ModalAddConciliation = () => {
                                 onChange={handleInputChange}
                                 type="text"
                                 value={values.description}
-
+                                required={true}
                             />
                             <Input
                                 id="debit_mides"
@@ -74,6 +75,7 @@ export const ModalAddConciliation = () => {
                                 title="Solo números"
                                 type="text"
                                 value={values.debit_mides}
+                                required={true}
                             />
                             <Input
                                 id="debit_bnp"
@@ -84,6 +86,7 @@ export const ModalAddConciliation = () => {
                                 title="Solo números"
                                 type="text"
                                 value={values.debit_bnp}
+                                required={true}
                             />
                         </div>
                         <div className="modal-footer">

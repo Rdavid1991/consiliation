@@ -1,12 +1,12 @@
 import React from "react";
-import {renderToString} from 'react-dom/server';
-import Swal from"sweetalert2";
+import { renderToString } from "react-dom/server";
+import Swal from "sweetalert2";
 import { SideBarMenu } from "../components/SideBarMenu";
 
-export const SideBar = async() => {
-  
+export const SideBarAction = async () => {
+
     await Swal.fire({
-        grow      : 'row',
+        grow      : "column",
         hideClass : {
             popup: `
           animate__animated
@@ -14,8 +14,8 @@ export const SideBar = async() => {
           animate__faster
           `
         },
-        html      : renderToString(<SideBarMenu/>),
-        position  : 'top-start',
+        html      : renderToString( <SideBarMenu /> ),
+        position  : "top-start",
         showClass : {
             popup: `
             animate__animated
@@ -25,7 +25,7 @@ export const SideBar = async() => {
         },
         showCloseButton   : true,
         showConfirmButton : false,
-        title             : 'Left sidebar 👋',
-        width             : 300,
+        title             : "Left sidebar 👋",
+        width             : 400,
     });
 };

@@ -21,6 +21,7 @@ class Conciliation
         if ($result["isSuccess"]) {
             $message = Message::successServer("Conciliación creada correctamente");
             Response::code_201($message);
+            exit();
         }
     }
 

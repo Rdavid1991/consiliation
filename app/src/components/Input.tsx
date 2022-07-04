@@ -10,34 +10,27 @@ interface Props {
     title?: string;
     type: React.HTMLInputTypeAttribute;
     value: string;
+    required ?: boolean
 }
 
+type PropsInput = Omit<Props, "label">;
+type LabelProps = Pick<Props, "id" | "label">;
 
 export const Input = ( props: Props ) => {
 
-    const {
-        disabled,
-        id,
-        label,
-        onChange,
-        pattern,
-        placeholder,
-        title,
-        type,
-        value,
-    } = props;
-
+    const inputProps: PropsInput = props;
+    const labelProps: LabelProps = props;
 
     return (
         <div className="mb-3">
             <label
                 className="form-label"
-                htmlFor={id}
+                htmlFor={labelProps.id}
             >
-                {label}
+                {labelProps.label}
             </label>
             <input
-                {...{ disabled, id, onChange, pattern, placeholder, title, type, value }}
+                {...{ ...inputProps }}
                 className="form-control form-control-sm"
             />
         </div>
