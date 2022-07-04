@@ -60,6 +60,6 @@ class Insert extends ManagementDB
             $this->_insert
         );
 
-        parent::insert_query($sql, $array_values);
+        return parent::insert_query($sql, $array_values);
     }
 }

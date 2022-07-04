@@ -1,6 +1,7 @@
 <?php
 
-require_once(dirname(__FILE__)."/../message/Message.php");
+require_once(dirname(__FILE__)."/../utils/Message.php");
+require_once(dirname(__FILE__)."/../utils/Response_code.class.php");
 require_once(dirname(__FILE__)."/../class/Conciliation.php");
 
 
@@ -25,8 +26,9 @@ if (str_contains($_GET["route"], "conciliation")) {
                 # code...
                 break;
         };
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
         $message = Message::errorServer("A ocurrido un error: conciliación");
-        exit(json_encode($message));
+        Response::code_500($message);
+        exit();
     }
 }

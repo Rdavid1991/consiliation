@@ -1,3 +1,4 @@
+import { AlertServer } from "./alerts";
 
 export const fetch_POST = async ( url :string, params:{[s:string | number]:unknown}) => {
     const formData = new FormData();
@@ -11,8 +12,10 @@ export const fetch_POST = async ( url :string, params:{[s:string | number]:unkno
         method : "POST",
     });
 
-    if ( response.ok ) {
+    if ( response.status === 200 ) {
         return await response.json();
+    }else{
+        AlertServer( JSON.parse( response.statusText ));
     }
 
 };
@@ -29,7 +32,9 @@ export const fetch_GET = async ( url: string, params:{[s:string | number]:unknow
         method: "GET"
     });
 
-    if ( response.ok ) {
+    if ( response.status === 200 ) {
         return await response.json();
+    }else{
+        AlertServer( JSON.parse( response.statusText ));
     }
 };

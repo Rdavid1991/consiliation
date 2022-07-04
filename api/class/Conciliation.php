@@ -1,8 +1,9 @@
 <?php
 
-require_once(dirname(__FILE__)."/../db/Insert.class.php");
-require_once(dirname(__FILE__)."/../db/Select.class.php");
-require_once(dirname(__FILE__)."/../db/ServerSide.class.php");
+require_once(dirname(__FILE__) . "/../db/Select.class.php");
+require_once(dirname(__FILE__) . "/../utils/Message.php");
+require_once(dirname(__FILE__) . "/../db/Insert.class.php");
+require_once(dirname(__FILE__) . "/../db/ServerSide.class.php");
 
 class Conciliation
 {
@@ -15,7 +16,12 @@ class Conciliation
         $insert->into_table($this->_main_table);
         $insert->in_columns(array_keys($_POST));
         $insert->values(array_values($_POST));
-        $insert->go();
+        $result = $insert->go();
+
+        if ($result["isSuccess"]) {
+            $message = Message::successServer("Conciliación creada correctamente");
+            Response::code_201($message);
+        }
     }
 
     public function get_all()

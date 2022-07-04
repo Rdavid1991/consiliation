@@ -1,6 +1,7 @@
 <?php
 
-//require_once(dirname(__FILE__)."/message/Message.php");
+require_once(dirname(__FILE__)."/../utils/Message.php");
+require_once(dirname(__FILE__)."/../utils/Response_code.class.php");
 
 define(
     "CONNECTION_INFO",
@@ -31,8 +32,8 @@ class Connection
         } else {
             $arrayError = sqlsrv_errors();
             $error = "No se pudo conectar a la base de datos: ".$arrayError[0]["message"];
-            //echo json_encode((object) ["message" => Message::errorDatabase($error)]);
-            http_response_code(500);
+            $message = Message::errorServer($error);
+            Response::code_500($message);
             exit();
         }
     }
