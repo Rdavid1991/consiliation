@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Table } from "../components/Table";
 import { conciliationTable } from "../utils/conciliationTable";
 import { ModalAddConciliation } from "../components/ModalAddConciliation";
@@ -8,6 +8,7 @@ import { modalShow } from "../utils/ModalActions";
 const tableId = "conciliation_table";
 
 export const Home = () => {
+
 
     useEffect(() => {
         conciliationTable( `#${tableId}` );

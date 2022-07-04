@@ -2,7 +2,8 @@ import { Input } from "./Input";
 import { useForm } from "../hooks/useForm";
 import { humanizeDate } from "../utils/formatDate";
 import { fetch_POST } from "../utils/requests";
-import { apiUrl } from "../config";
+import { apiUrl, conciliationEndPoints } from "../config";
+import { FormEvent } from "react";
 
 type StateAddConciliation = {
     date: string;
@@ -22,9 +23,11 @@ export const ModalAddConciliation = () => {
         reference   : "",
     });
 
-    const saveConciliation = ( e: any ) => {
+    const saveConciliation = ( e: FormEvent<HTMLFormElement> ) => {
         e.preventDefault();
-        fetch_POST( apiUrl, values );
+
+        const url = `${apiUrl}?${conciliationEndPoints.save}`;
+        fetch_POST( url , values );
     };
 
     return (

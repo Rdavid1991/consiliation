@@ -1,5 +1,5 @@
 import { fetch_GET } from "./requests";
-import { apiUrl } from "../config";
+import { apiUrl, conciliationEndPoints } from "../config";
 import { humanizeDate } from "./formatDate";
 
 
@@ -17,7 +17,9 @@ export const conciliationTable = ( id : string ) => {
                     options[key] = JSON.stringify( value );
                 });
                 
-                const response = await fetch_GET( apiUrl, {...data});
+                const route = conciliationEndPoints.getAll.split( "=" );
+
+                const response = await fetch_GET( apiUrl, {...data, [route[0]]: route[1] });
                 
                 callback( response );
             },
