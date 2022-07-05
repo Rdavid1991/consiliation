@@ -22,12 +22,16 @@ export const getMonthsList = () => {
 
 };
 
-export const moneyFormat = ( nNumber : number  ) => { 
-    const sNumber = String( nNumber );
+export const moneyUnformat = ( number: string ) => { 
+    const unformated = number.match( /\d+/g )?.join( "" );
+    return unformated?.toString(); 
+};
 
-    const sDecimal = sNumber.replace( /(\d+)(?=(\d{2}))/g, "$1." );
+export const moneyFormat = ( nNumber : string  ) => { 
+
+    const sDecimal = nNumber.replace( /(\d+)(?=(\d{2}))/g, "$1." );
     const scolon = sDecimal.replace( /(\d)(?=(\d{3})+\.)/g, "$1," );
     
-    return scolon;
+    return scolon.toString();
 
 };
