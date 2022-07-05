@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "../hooks/useForm";
 import { humanizeDate } from "../utils/formatDate";
-import { getMonthsList } from "../utils/helpers";
+import { getMonthsList, moneyFormat } from "../utils/helpers";
 import { Input } from "./Input";
-import { Select } from "./Select";
+import { Options, Select } from "./Select";
 
 type StateAddConciliation = {
     date: string;
@@ -23,6 +23,15 @@ export const ModalAddCredit = () => {
         console.log();
         
     }
+
+    const [isEditing , setIsEditing ] = useState( false );
+
+    const editando = () => { 
+        setIsEditing( !isEditing );
+    };
+
+    console.log( isEditing );
+    
 
     return (
         <div className="modal fade" id="addCredit">
@@ -46,10 +55,43 @@ export const ModalAddCredit = () => {
                             />
 
                             <Select
-                                id="date"
-                                label="Fecha"
-                                options={getMonthsList()}
-                            />
+                                id="month"
+                                label="Mes"
+                            >
+                                {
+                                    getMonthsList().map(( month, index ) => (
+                                        <Options 
+                                            value={String( month.number )} 
+                                            key={index} 
+                                            text={month.name}
+                                        />
+                                    ))
+                                }
+                            </Select>
+
+                            {
+                                isEditing
+                                    ?
+                                        <Input
+                                            onChange={handleInputChange}
+                                            id="credit"
+                                            label="Monto"
+                                            type="number"
+                                            placeholder="0.00"
+                                            value={values.credit}
+                                            onBlur={editando}
+                                        />
+                                    : 
+                                        <Input
+                                            onChange={handleInputChange}
+                                            onFocus={editando}
+                                            id="credit"
+                                            label="Monto"
+                                            type="text"
+                                            placeholder="0.00"
+                                            value={moneyFormat( Number( values.credit ))}
+                                        />
+                            }
 
                         </div>
                         <div className="modal-footer">

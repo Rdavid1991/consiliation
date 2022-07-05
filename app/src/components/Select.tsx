@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, ReactNode } from "react";
 
 interface Props {
     disabled?: boolean;
@@ -9,19 +9,16 @@ interface Props {
     title?: string;
     value?: string;
     required?: boolean;
-    options?: Array<unknown>
+    children : ReactNode
 }
 
 type PropsSelect = Omit<Props, "label" | "options">;
 type LabelProps = Pick<Props, "id" | "label">;
-type SelectOptions = Pick<Props, "options">
 
 export const Select = ( props: Props ) => {
 
     const selectProps: PropsSelect = props;
     const labelProps: LabelProps = props;
-
-    const select: SelectOptions = props;
 
     return (
         <div className="mb-3">
@@ -35,12 +32,19 @@ export const Select = ( props: Props ) => {
                 {...{ ...selectProps }}
                 className="form-select-sm form-select"
             >
-                {
-                    select.options?.map(( option ) => {
-                        return <>{option}</>;
-                    })
-                }
+                {props.children}
             </select>
         </div>
     );
 };
+
+interface PropsOptions {
+    text: string;
+    value : string;
+}
+
+export const Options = ( props: PropsOptions ) => { 
+    return <option value={props.value}>{props.text}</option>;
+};
+
+
