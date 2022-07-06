@@ -55,7 +55,7 @@ class Conciliation
         $select->order_by($sOrder);
         $select->limit($sLimit);
         $result = $select->go();
-        $total  = $select->count();
+        $total  = $select->count($constant_filtering);
 
         $dispatch = $serverside->dispatch($result["data"], $total["data"][0]->total);
 

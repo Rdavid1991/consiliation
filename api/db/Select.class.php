@@ -75,11 +75,17 @@ class Select extends ManagementDB
         return parent::select_query($sql, $this->_params);
     }
 
-    public function count()
+    public function count(array $where = [])
     {
 
+        $sWhere = "";
+        if (sizeof($where) > 0) {
+            $sWhere = "WHERE (__condition__) ";
+            $sWhere = str_replace("__condition__", join(" AND ", $where), $sWhere);
+        } 
+
         $str_table = $this->_table;
-        $str_where = $this->_where;
+        $str_where = $sWhere;
         $str_order = $this->_order_by;
         $str_limit = $this->_limit;
         $sql = str_replace(
