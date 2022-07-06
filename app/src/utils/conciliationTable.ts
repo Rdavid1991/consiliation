@@ -34,6 +34,10 @@ export const conciliationTable = ( id : string ) => {
                 { data: "reference" },
                 { data: "description" },
                 { 
+                    data   : "credit",
+                    render : ( val : number | string  ) => moneyFormat( `<span id="currency">B/.</span> ${val}` )
+                },
+                { 
                     data   : "debit_bnp",
                     render : ( val : number | string  ) => moneyFormat( `<span id="currency">B/.</span> ${val}` )
                 },
@@ -41,8 +45,10 @@ export const conciliationTable = ( id : string ) => {
                     data   : "debit_mides",
                     render : ( val : number | string  ) => moneyFormat( `<span id="currency">B/.</span> ${val}` )
                 },
-
-                
+                { 
+                    data   : "balance",
+                    render : ( val : number | string  ) => moneyFormat( `<span id="currency">B/.</span> ${val}` )
+                }
             ],
             processing : true,
             retrieve   : true,

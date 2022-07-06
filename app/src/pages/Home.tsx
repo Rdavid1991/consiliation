@@ -101,8 +101,10 @@ export const Home = () => {
                     "Fecha",
                     "Referencia",
                     "Descripción",
+                    "Credito",
                     "Débito MIDES",
-                    "Débito BNP"
+                    "Débito BNP",
+                    "Balance"
                 ]}
             />
         </React.Fragment>

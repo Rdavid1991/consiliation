@@ -5,7 +5,7 @@ require_once(dirname(__FILE__) . "/management.php");
 class Select extends ManagementDB
 {
 
-    protected $_params=[];
+    protected $_params = [];
     protected $_table;
     protected $_columns = "*";
     protected $_values;
@@ -82,7 +82,7 @@ class Select extends ManagementDB
         if (sizeof($where) > 0) {
             $sWhere = "WHERE (__condition__) ";
             $sWhere = str_replace("__condition__", join(" AND ", $where), $sWhere);
-        } 
+        }
 
         $str_table = $this->_table;
         $str_where = $sWhere;
@@ -127,12 +127,16 @@ class Select extends ManagementDB
         $this->_limit = $limit_query;
     }
 
+    /**
+     * @param string $where_query
+     */
     public function where(string $where_query)
     {
         $this->_where = $where_query;
     }
 
-    public function params(array $params){
+    public function params(array $params)
+    {
         $this->_params = $params;
     }
 }
