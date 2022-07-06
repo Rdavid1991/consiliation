@@ -5,14 +5,14 @@ interface Props {
     id: string;
     label: string;
     onChange?: ( e: ChangeEvent<HTMLInputElement> ) => void;
-    onBlur?: ()=> void;
-    onFocus?: ()=> void;
+    onBlur?: () => void;
+    onFocus?: () => void;
     pattern?: string;
     placeholder?: string;
     title?: string;
     type: React.HTMLInputTypeAttribute;
     value: string;
-    required ?: boolean
+    required?: boolean
 }
 
 type PropsInput = Omit<Props, "label">;

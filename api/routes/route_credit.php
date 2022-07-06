@@ -1,23 +1,29 @@
 <?php
-if (str_contains($_GET["route"], "conciliation")) {
-    
-    require_once(dirname(__FILE__)."/../class/Conciliation.php");
+
+
+if (str_contains($_GET["route"], "credit")) {
+
+    require_once(dirname(__FILE__) . "/../class/Credit.php");
 
     $option = explode("_", $_GET["route"], 2);
 
     try {
 
-        $conciliation = new Conciliation();
+        $credit = new Credit();
 
         switch ($option[1]) {
             case 'save':
-                $conciliation->save();
+                $credit->save();
                 break;
 
             case 'get_all':
-                $conciliation->get_all();
+                $credit->get_all();
                 break;
-    
+
+            case "get_from_month":
+                $credit->get_from_month();
+                break;
+
             default:
                 # code...
                 break;

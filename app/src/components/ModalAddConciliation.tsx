@@ -3,7 +3,8 @@ import { useForm } from "../hooks/useForm";
 import { humanizeDate } from "../utils/formatDate";
 import { fetch_POST } from "../utils/requests";
 import { apiUrl, conciliationEndPoints } from "../config";
-import { FormEvent } from "react";
+import { FormEvent, ChangeEvent } from "react";
+import { moneyUnformat, moneyFormat } from "../utils/helpers";
 
 type StateAddConciliation = {
     date: string;
@@ -15,7 +16,7 @@ type StateAddConciliation = {
 
 export const ModalAddConciliation = () => {
 
-    const { values, handleInputChange } = useForm<StateAddConciliation>({
+    const { values, handleInputChange, setValues } = useForm<StateAddConciliation>({
         date        : new Date().toISOString(),
         debit_bnp   : "",
         debit_mides : "",
@@ -27,7 +28,14 @@ export const ModalAddConciliation = () => {
         e.preventDefault();
 
         const url = `${apiUrl}?${conciliationEndPoints.save}`;
-        fetch_POST( url , values );
+        fetch_POST( url, values );
+    };
+
+    const handleInputChangeSpecial = ({ target }: ChangeEvent<HTMLInputElement> ) => {
+        setValues({
+            ...values,
+            [target.name || target.id]: moneyUnformat( target.value )
+        });
     };
 
     return (
@@ -69,23 +77,21 @@ export const ModalAddConciliation = () => {
                             <Input
                                 id="debit_mides"
                                 label="Débito MIDES"
-                                onChange={handleInputChange}
-                                pattern="\d+"
-                                placeholder="0"
+                                onChange={handleInputChangeSpecial}
+                                placeholder="0.00"
                                 title="Solo números"
                                 type="text"
-                                value={values.debit_mides}
+                                value={moneyFormat( values.debit_mides )}
                                 required={true}
                             />
                             <Input
                                 id="debit_bnp"
                                 label="Débito BNP"
-                                onChange={handleInputChange}
-                                pattern="\d+"
-                                placeholder="0"
+                                onChange={handleInputChangeSpecial}
+                                placeholder="0.00"
                                 title="Solo números"
                                 type="text"
-                                value={values.debit_bnp}
+                                value={moneyFormat( values.debit_bnp )}
                                 required={true}
                             />
                         </div>

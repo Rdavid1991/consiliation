@@ -20,15 +20,19 @@ class ServerSide
         $this->_start   = intval($request["start"]);
         $this->_length  = intval($request["length"]);
 
-        foreach ($this->_columns as $key => $value) {
-            array_push($this->_aColumns, $value["data"]);
-        }
+        $this->_aColumns  = array_column($this->_columns, "data");
     }
 
     public function get_columns_name()
     {
         return $this->_aColumns;
     }
+
+    public function get_columns_options()
+    {
+        return $this->_columns;
+    }
+
     public function get_draw()
     {
         return $this->_draw;
@@ -89,6 +93,21 @@ class ServerSide
         return $sOrder;
     }
 
+    /**
+     * Agregar filtro especial a columnas 
+     * @param array $conditions ["column=value"]
+     * @param string $sWhere  "WHERE ..." || ""
+     */
+    function constant_filtering(string $sWhere, array $conditions)
+    {
+        if ($sWhere === "") {
+            $sWhere = "WHERE (__condition__) ";
+        } else {
+            $sWhere .= " AND (__condition__)";
+        }
+        return str_replace("__condition__", join(" AND ", $conditions), $sWhere);
+    }
+
     function filtering()
     {
         $sWhere = "";
@@ -116,17 +135,16 @@ class ServerSide
         }
 
         /* Individual column filtering */
-        $aColumn_search = array_column(array_column($this->_columns, "search"),"value");
-        $aSearch = preg_grep('/\w{1,}/',$aColumn_search );
+        $aColumn_search = array_column(array_column($this->_columns, "search"), "value");
+        $aSearch = preg_grep('/\w{1,}/', $aColumn_search);
         if (sizeof($aSearch) > 0) {
 
-            $sWhere ="WHERE (__condition__)";
             $sCondition = "[__columns__] LIKE '%__value__%'";
             $aCondition = array();
 
             for ($i = 0; $i < count($this->_aColumns); $i++) {
                 if ($this->_columns[$i]["searchable"] && $this->_columns[$i]["search"]["value"] != '') {
-                    
+
                     $condition = str_replace(
                         [
                             "__columns__",
@@ -134,17 +152,23 @@ class ServerSide
                         ],
                         [
                             $this->_aColumns[$i],
-                            $this->_columns[$i]["search"]["value"] 
+                            $this->_columns[$i]["search"]["value"]
                         ],
                         $sCondition
                     );
                     array_push($aCondition, $condition);
                 }
             }
-            $sWhere = str_replace("__condition__", join(" AND ", $aCondition), $sWhere);
+
+            if ($sWhere === "") {
+                $sWhere = "WHERE (__condition__)";
+                $sWhere = str_replace("__condition__", join(" AND ", $aCondition), $sWhere);
+            } else {
+                $sWhere .= " AND (" . join(" AND ", $aCondition) . ")";
+            }
         }
 
-        return $sWhere;
+        return $sWhere === "WHERE ()" ? "" : $sWhere ;
     }
 
     public function dispatch(array $data, int $data_total_count)

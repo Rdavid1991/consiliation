@@ -5,6 +5,7 @@ require_once(dirname(__FILE__) . "/management.php");
 class Select extends ManagementDB
 {
 
+    protected $_params=[];
     protected $_table;
     protected $_columns = "*";
     protected $_values;
@@ -71,7 +72,7 @@ class Select extends ManagementDB
 
         $this->clear_attr();
 
-        return parent::select_query($sql);
+        return parent::select_query($sql, $this->_params);
     }
 
     public function count()
@@ -123,5 +124,9 @@ class Select extends ManagementDB
     public function where(string $where_query)
     {
         $this->_where = $where_query;
+    }
+
+    public function params(array $params){
+        $this->_params = $params;
     }
 }

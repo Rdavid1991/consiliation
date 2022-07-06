@@ -1,6 +1,7 @@
 import { fetch_GET } from "./requests";
 import { apiUrl, conciliationEndPoints } from "../config";
 import { humanizeDate } from "./formatDate";
+import { moneyFormat } from "./helpers";
 
 
 export const conciliationTable = ( id : string ) => {
@@ -26,13 +27,21 @@ export const conciliationTable = ( id : string ) => {
             columns: [
                 
                 { 
-                    data   : "date",
-                    render : ( val )=>humanizeDate( val ),
+                    data       : "date",
+                    render     : ( val )=>humanizeDate( val ),
+                    searchable : false
                 },
-                { data: "debit_bnp" },
-                { data: "debit_mides" },
-                { data: "description" },
                 { data: "reference" },
+                { data: "description" },
+                { 
+                    data   : "debit_bnp",
+                    render : ( val : number | string  ) => moneyFormat( `<span id="currency">B/.</span> ${val}` )
+                },
+                { 
+                    data   : "debit_mides",
+                    render : ( val : number | string  ) => moneyFormat( `<span id="currency">B/.</span> ${val}` )
+                },
+
                 
             ],
             processing : true,
