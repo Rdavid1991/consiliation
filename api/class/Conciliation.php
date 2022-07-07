@@ -8,6 +8,7 @@ require_once(dirname(__FILE__) . "/../db/ServerSide.class.php");
 class Conciliation
 {
 
+    private $_data_table = "conciliation_register";
     private $_main_table = "conciliations";
     private $_credit_totals_table = "conciliation_credits_totals";
 
@@ -80,7 +81,7 @@ class Conciliation
 
         $select = new Select();
 
-        $select->from_table($this->_main_table);
+        $select->from_table($this->_data_table);
         $select->columns($aColumns);
         $select->where($sWhere);
         $select->order_by($sOrder);

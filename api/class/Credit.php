@@ -11,7 +11,7 @@ class Credit
     private $_secondary_table = "conciliation_credits_totals";
 
 
-    protected function calculate()
+    protected function calculate( &$balance)
     {
         $select = new Select();
 
@@ -34,7 +34,7 @@ class Credit
 
 
             $totalAmount = $previousAmount + $newAmount;
-            $totalRemaining = $previousRemaining + $newAmount;
+            $totalRemaining = $balance = $previousRemaining + $newAmount;
 
             $params = [
                 $totalAmount,
@@ -49,6 +49,8 @@ class Credit
             $update->where("WHERE [$columns[1]]= '" . $result["data"][0]->month . "'");
             return $update->go();
         } else {
+
+            $balance = $_POST["credit"];
 
             $values = [
                 $_POST["credit"],
@@ -67,15 +69,27 @@ class Credit
     public function save()
     {
 
+        $balance = 0;
+
+        $result = $this->calculate($balance);
+
+        $columns = array_keys($_POST);
+
+        array_push($columns,...["balance"]);
+
+        $values = array_values($_POST);
+
+        array_push($values, ...[$balance]);
+
         $insert = new Insert();
         $insert->into_table($this->_main_table);
-        $insert->in_columns(array_keys($_POST));
-        $insert->values(array_values($_POST));
+        $insert->in_columns($columns);
+        $insert->values($values);
         $result = $insert->go();
 
         if ($result["isSuccess"]) {
 
-            $result = $this->calculate();
+           
 
             if ($result["isSuccess"]) {
                 $message = Message::successServer("Crédito agregado correctamente");

@@ -104,7 +104,7 @@ export const Home = () => {
                     "Credito",
                     "Débito MIDES",
                     "Débito BNP",
-                    "Balance"
+                    "Balance",
                 ]}
             />
         </React.Fragment>

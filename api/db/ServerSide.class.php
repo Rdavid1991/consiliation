@@ -94,7 +94,7 @@ class ServerSide
     }
 
     /**
-     * Agregar filtro especial a columnas 
+     * Agregar filtro especial a columnas, la columna a filtrar debe tener el valor "sercheable=false" para que el filtro no falle
      * @param array $conditions ["column=value"]
      * @param string $sWhere  "WHERE ..." || ""
      */

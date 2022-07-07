@@ -2,6 +2,8 @@ import { fetch_GET } from "./requests";
 import { apiUrl, conciliationEndPoints } from "../config";
 import { humanizeDate } from "./formatDate";
 import { moneyFormat } from "./helpers";
+import { renderToString } from "react-dom/server";
+import DataTableCellMoney from "../components/DataTableCellMoney";
 
 
 export const conciliationTable = ( id : string ) => {
@@ -35,19 +37,23 @@ export const conciliationTable = ( id : string ) => {
                 { data: "description" },
                 { 
                     data   : "credit",
-                    render : ( val : number | string  ) => moneyFormat( `<span id="currency">B/.</span> ${val}` )
+                    render : ( val : number | string  ) => renderToString( 
+                        <DataTableCellMoney value={moneyFormat( val as string )}/> )
                 },
                 { 
                     data   : "debit_bnp",
-                    render : ( val : number | string  ) => moneyFormat( `<span id="currency">B/.</span> ${val}` )
+                    render : ( val : number | string  ) => renderToString( 
+                        <DataTableCellMoney value={moneyFormat( val as string )}/> )
                 },
                 { 
                     data   : "debit_mides",
-                    render : ( val : number | string  ) => moneyFormat( `<span id="currency">B/.</span> ${val}` )
+                    render : ( val : number | string  ) => renderToString( 
+                        <DataTableCellMoney value={moneyFormat( val as string )}/> )
                 },
                 { 
                     data   : "balance",
-                    render : ( val : number | string  ) => moneyFormat( `<span id="currency">B/.</span> ${val}` )
+                    render : ( val : number | string  ) => renderToString( 
+                        <DataTableCellMoney value={moneyFormat( val as string )}/> )
                 }
             ],
             processing : true,
